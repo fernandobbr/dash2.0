@@ -168,9 +168,24 @@
         </div>
       </div>
 
+      <div class="ms-wrap" id="wrap-fRecursoPai">
+        <div class="ms-btn" id="btn-fRecursoPai" onclick="toggleMs('fRecursoPai')">
+          <span class="ms-label" id="lbl-fRecursoPai">Recurso Pai: todos</span>
+          <span class="ms-arrow">▼</span>
+        </div>
+        <div class="ms-dropdown" id="drop-fRecursoPai">
+          <input class="ms-search" placeholder="Buscar..." oninput="filterMsItems('fRecursoPai',this.value)">
+          <div class="ms-actions">
+            <button class="ms-act-btn" onclick="selectAllMs('fRecursoPai')">Todos</button>
+            <button class="ms-act-btn" onclick="clearMs('fRecursoPai')">Limpar</button>
+          </div>
+          <div id="items-fRecursoPai"></div>
+        </div>
+      </div>
+
       <div class="ms-wrap" id="wrap-fRecursoPend">
         <div class="ms-btn" id="btn-fRecursoPend" onclick="toggleMs('fRecursoPend')">
-          <span class="ms-label" id="lbl-fRecursoPend">Recurso Pend.: todos</span>
+          <span class="ms-label" id="lbl-fRecursoPend">Recurso Filho:</span>
           <span class="ms-arrow">▼</span>
         </div>
         <div class="ms-dropdown" id="drop-fRecursoPend">
