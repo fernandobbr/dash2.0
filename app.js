@@ -128,7 +128,7 @@ function processData(json, fname) {
   grpFiltro = 'todos';
   document.getElementById('searchInput').value = '';
 
-  ['fSemana', 'fSitPai', 'fSitFilho', 'fAnalise', 'fRecursoPend', 'fUso', 'fPendente', 'fPreparacao', 'fSaldoDisp'].forEach(function (id) {
+  ['fSemana', 'fSitPai', 'fSitFilho', 'fAnalise', 'fRecursoPend', 'fRecursoPai', 'fUso', 'fPendente', 'fPreparacao', 'fSaldoDisp'].forEach(function (id) {
     var btn = document.getElementById('btn-' + id);
     if (!btn) return;
     var count = btn.querySelector('.ms-count');
@@ -289,7 +289,8 @@ function getMsDefault(id) {
     fSitPai: 'Sit. Pai: todas',
     fSitFilho: 'Sit. Filho: todas',
     fAnalise: 'Análise: todas',
-    fRecursoPend: 'Recurso Pend.: todos',
+    fRecursoPend: 'Recurso Filho:',
+    fRecursoPai: 'Recurso Pai: todos',
     fUso: 'Uso: todos',
     fPreparacao: 'Preparação: todas',
     fPendente: 'Pendente: todos',
@@ -333,7 +334,8 @@ function populateFilters() {
   initMs('fSitPai', uniq('SITUACAO_PAI'), 'Sit. Pai: todas');
   initMs('fSitFilho', uniq('SITUACAO_FILHO'), 'Sit. Filho: todas');
   initMs('fAnalise', uniq('ANALISE'), 'Análise: todas');
-  initMs('fRecursoPend', uniq('RECURSO_PENDENTE'), 'Recurso Pend.: todos');
+  initMs('fRecursoPend', uniq('RECURSO_PENDENTE'), 'Recurso Filho:');
+  initMs('fRecursoPai', uniq('RECURSO'), 'Recurso Pai: todos');
   initMs('fUso', uniq('USO_PAI'), 'Uso: todos');
   initMs('fPreparacao', uniq('PREPARACAO'), 'Preparação: todas');
   initMs('fPendente', ['Com pendência', 'Sem pendência'], 'Pendente: todos', true);
@@ -341,7 +343,7 @@ function populateFilters() {
 }
 
 function clearAllFilters() {
-  ['fSemana', 'fSitPai', 'fSitFilho', 'fAnalise', 'fRecursoPend', 'fUso', 'fPendente', 'fPreparacao', 'fSaldoDisp'].forEach(function (id) {
+  ['fSemana', 'fSitPai', 'fSitFilho', 'fAnalise', 'fRecursoPend', 'fRecursoPai', 'fUso', 'fPendente', 'fPreparacao', 'fSaldoDisp'].forEach(function (id) {
     clearMs(id);
   });
   document.getElementById('searchInput').value = '';
@@ -358,6 +360,7 @@ function applyFilters() {
   var anl = msState['fAnalise'] || new Set();
   var pend = msState['fPendente'] || new Set();
   var recPend = msState['fRecursoPend'] || new Set();
+  var recPai = msState['fRecursoPai'] || new Set();
   var uso = msState['fUso'] || new Set();
   var prep = msState['fPreparacao'] || new Set();
   var saldoD = msState['fSaldoDisp'] || new Set();
@@ -385,6 +388,7 @@ function applyFilters() {
     }
 
     if (recPend.size && !recPend.has(r.RECURSO_PENDENTE)) return false;
+    if (recPai.size && !recPai.has(r.RECURSO)) return false;
     if (uso.size && !uso.has(r.USO_PAI)) return false;
 
     /* Filtro Preparação */
