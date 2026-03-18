@@ -663,7 +663,7 @@ function updateChartRecurso() {
 
   if (!entries.length) { el.innerHTML = '<div class="no-data">Sem pendências nos dados filtrados</div>'; return; }
 
-  el.innerHTML = entries.map(function (e) {
+el.innerHTML = entries.map(function (e) {
     var recurso = e[0], peso = e[1].peso, qtd = Object.keys(e[1].opFilhosVisto).length;
     return '<div class="hbar-row clickable" data-recurso="' + encodeURIComponent(recurso) + '">' +
       '<div class="hbar-lbl" title="' + recurso + '">' + recurso + '</div>' +
@@ -671,6 +671,9 @@ function updateChartRecurso() {
       '<div class="hbar-val" style="color:var(--yellow)">' + fmtTon(peso) + '</div>' +
       '<div class="hbar-val" style="color:var(--red);font-size:12px">' + qtd + ' OP' + (qtd !== 1 ? 's' : '') + '</div>' +
       '<div class="hbar-icon" title="clique para detalhes">⚑</div>' +
+      '<button class="hbar-copy-btn" data-recurso-copy="' + encodeURIComponent(recurso) + '" title="Copiar OPs filhas deste recurso">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>' +
+      '</button>' +
       '</div>';
   }).join('');
 
@@ -678,6 +681,14 @@ function updateChartRecurso() {
     row.onclick = function () {
       var recurso = decodeURIComponent(row.getAttribute('data-recurso'));
       openModalRecurso(recurso, recMap[recurso]);
+    };
+  });
+
+  el.querySelectorAll('.hbar-copy-btn').forEach(function (btn) {
+    btn.onclick = function (e) {
+      e.stopPropagation();
+      var recurso = decodeURIComponent(btn.getAttribute('data-recurso-copy'));
+      copyRecursoOPs(recurso, recMap[recurso].opFilhosVisto, btn);
     };
   });
 }
@@ -976,7 +987,7 @@ function chipCls(s) {
 function prepCls(v) {
   if (v === 'Liberada') return 'c-enc';
   if (v === 'Em Andamento') return 'c-prog';
-  return 'c-imp';
+  return 'c-risk';
 }
 
 function anlCls(a) {
@@ -1006,6 +1017,41 @@ function percClr(p) {
   if (v >= 40) return 'var(--yellow)';
   return 'var(--red)';
 }
+
+function copyRecursoOPs(recurso, opFilhosVisto, btn) {
+  var ops = Object.keys(opFilhosVisto);
+  if (!ops.length) return;
+
+  var iconCopy = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+  var iconCheck = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  var texto = ops.join('\n');
+
+  navigator.clipboard.writeText(texto).then(function () {
+    btn.classList.add('copied');
+    btn.innerHTML = iconCheck;
+    setTimeout(function () {
+      btn.classList.remove('copied');
+      btn.innerHTML = iconCopy;
+    }, 2000);
+  }).catch(function () {
+    var ta = document.createElement('textarea');
+    ta.value = texto;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    btn.classList.add('copied');
+    btn.innerHTML = iconCheck;
+    setTimeout(function () {
+      btn.classList.remove('copied');
+      btn.innerHTML = iconCopy;
+    }, 2000);
+  });
+}
+
 
 /* ══════════════════════════════════════════
    CHANGELOG
